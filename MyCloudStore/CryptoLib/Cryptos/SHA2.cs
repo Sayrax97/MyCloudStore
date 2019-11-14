@@ -27,14 +27,15 @@ namespace CryptoLib.Cryptos
             0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa,0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         };
 
-        public string Encrypt(byte[] message)
+        public string Hash(byte[] message)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            //Pre-processing
             var bitMessage = new BitArray(message);
             var bitsLength=bitMessage.Length+1;
-            var ostatak=bitsLength%512;
-            bitsLength+=448-ostatak;
+            var remainder=bitsLength%512;
+            bitsLength+=448-remainder;
 
             var bits=new BitArray(bitsLength+64);
             bits.Set(bitMessage.Length, true);
@@ -49,7 +50,8 @@ namespace CryptoLib.Cryptos
             {
                 bits[j] = bits[j] | bit64Array[i];
             }
-            int Nochunks=bits.Length/512;
+            //Process the message in successive 512-bit chunks
+            int Nochunks =bits.Length/512;
             var chunkBoolArray = new bool[bits.Length];
             bits.CopyTo(chunkBoolArray, 0);
             for (int i = 0; i < Nochunks; i++)
@@ -74,16 +76,18 @@ namespace CryptoLib.Cryptos
                     var s1 = (RightRotate(w[j - 2], 17) ^ RightRotate(w[j - 2], 19) ^ (w[j - 15] >> 10));
                     w[j] = w[j - 16] + s0 + w[j - 7] + s1;
                 }
-                
+                //Initialize working variables to current hash value:
                 uint a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+
+                //Compression function main loop:
                 for (int j = 0; j <64 ; j++)
                 {
+                    var s1 = (RightRotate(e, 6) ^ RightRotate(e, 11) ^ RightRotate(e, 25));
+                    var ch = (e & f) ^ ((~e) & g);
+                    var t1 = h + s1 + ch + K[j] + w[j];
                     var s0 = (RightRotate(a, 2) ^ RightRotate(a, 13) ^ RightRotate(a, 22));
                     var ma = (a & b) ^ (a & c) ^ (b & c);
                     var t2 = s0 + ma;
-                    var s1 = (RightRotate(e, 6) ^ RightRotate(e, 11) ^ RightRotate(e, 25));
-                    var ch = (e & f) ^ (~e & f);
-                    var t1 = h + s1 + ch + K[j] + w[j];
                     h = g;
                     g = f;
                     f = e;
@@ -93,17 +97,18 @@ namespace CryptoLib.Cryptos
                     b = a;
                     a = t1 + t2;
                 }
-
+                //Add the compressed chunk to the current hash value:
                 H[0] = H[0] + a;
                 H[1] = H[1] + b;
                 H[2] = H[2] + c;
                 H[3] = H[3] + d;
-                H[4] = H[0] + e;
+                H[4] = H[4] + e;
                 H[5] = H[5] + f;
                 H[6] = H[6] + g;
                 H[7] = H[7] + h;
             }
 
+            //Produce the final hash value(big-endian):
             var hesh="";
             for (int i = 0; i < 8; i++)
             {
