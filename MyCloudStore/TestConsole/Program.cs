@@ -74,7 +74,11 @@ namespace TestConsole
             //var sha =new SHA2();
             //Console.WriteLine($"Text to be hashed: {System.Environment.NewLine} {text}");
             //Console.WriteLine(sha.Hash(x));
+            Console.WriteLine(Encoding.ASCII.GetString(
+                ToByteArray(
+                    XXTEA.Decrypt(XXTEA.Encrypt(textInt32Array, keyInt32Array),keyInt32Array),false)));
             Console.WriteLine(Encoding.ASCII.GetString(ToByteArray(XXTEA.Encrypt(textInt32Array, keyInt32Array),false)));
+            Console.WriteLine(Convert.ToBase64String(ToByteArray(XXTEA.Encrypt(textInt32Array, keyInt32Array), false)));
             // var Knapsack = new KnapSack();
             // // byte[] bytes=Encoding.ASCII.GetBytes(text);
             // var x = Knapsack.Encrypt(imageBytes);

@@ -43,5 +43,32 @@ namespace CryptoLib.Cryptos
             }
             return v;
         }
+        public static UInt32[] Decrypt(UInt32[] v, UInt32[] k)
+        {
+            Int32 n = v.Length - 1;
+            if (n < 1)
+            {
+                return v;
+            }
+            UInt32 z, y = v[0], sum, e;
+            Int32 p, q = 6 + 52 / (n + 1);
+            unchecked
+            {
+                sum = (UInt32)(q * delta);
+                while (sum != 0)
+                {
+                    e = sum >> 2 & 3;
+                    for (p = n; p > 0; p--)
+                    {
+                        z = v[p - 1];
+                        y = v[p] -= MX(sum, y, z, p, e, k);
+                    }
+                    z = v[n];
+                    y = v[0] -= MX(sum, y, z, p, e, k);
+                    sum -= delta;
+                }
+            }
+            return v;
+        }
     }
 }
