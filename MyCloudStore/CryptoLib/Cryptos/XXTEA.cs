@@ -11,14 +11,15 @@ namespace CryptoLib.Cryptos
         private static readonly UTF8Encoding utf8 = new UTF8Encoding();
 
         private const UInt32 delta = 0x9E3779B9;
+        private const string key = "DusanJankovic";
 
         private static UInt32 MX(UInt32 sum, UInt32 y, UInt32 z, Int32 p, UInt32 e, UInt32[] k)
         {
             return (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (k[p & 3 ^ e] ^ z);
         }
-        public static UInt32[] Encrypt(UInt32[] v, UInt32[] k)
+        private static UInt32[] Encrypt(UInt32[] v)
         {
-
+            var k= ToUInt32Array(Encoding.ASCII.GetBytes(FixKey(key)), false);
             Int32 n = v.Length - 1;
             if (n < 1)
             {
@@ -43,8 +44,9 @@ namespace CryptoLib.Cryptos
             }
             return v;
         }
-        public static UInt32[] Decrypt(UInt32[] v, UInt32[] k)
+        private static UInt32[] Decrypt(UInt32[] v)
         {
+            var k = ToUInt32Array(Encoding.ASCII.GetBytes(FixKey(key)), false);
             Int32 n = v.Length - 1;
             if (n < 1)
             {
@@ -69,6 +71,74 @@ namespace CryptoLib.Cryptos
                 }
             }
             return v;
+        }
+        private static UInt32[] ToUInt32Array(Byte[] data, Boolean includeLength)
+        {
+            Int32 length = data.Length;
+            Int32 n = (((length & 3) == 0) ? (length >> 2) : ((length >> 2) + 1));
+            UInt32[] result;
+            if (includeLength)
+            {
+                result = new UInt32[n + 1];
+                result[n] = (UInt32)length;
+            }
+            else
+            {
+                result = new UInt32[n];
+            }
+            for (Int32 i = 0; i < length; i++)
+            {
+                result[i >> 2] |= (UInt32)data[i] << ((i & 3) << 3);
+            }
+            return result;
+        }
+        private static Byte[] ToByteArray(UInt32[] data, Boolean includeLength)
+        {
+            Int32 n = data.Length << 2;
+            if (includeLength)
+            {
+                Int32 m = (Int32)data[data.Length - 1];
+                n -= 4;
+                if ((m < n - 3) || (m > n))
+                {
+                    return null;
+                }
+                n = m;
+            }
+            Byte[] result = new Byte[n];
+            for (Int32 i = 0; i < n; i++)
+            {
+                result[i] = (Byte)(data[i >> 2] >> ((i & 3) << 3));
+            }
+            return result;
+        }
+        private static string FixKey(string k)
+        {
+            var key = Encoding.ASCII.GetBytes(k);
+            if (key.Length == 16) return Encoding.ASCII.GetString(key);
+            Byte[] fixedkey = new Byte[16];
+            if (key.Length < 16)
+            {
+                key.CopyTo(fixedkey, 0);
+            }
+            else
+            {
+                Array.Copy(key, 0, fixedkey, 0, 16);
+            }
+            return Encoding.ASCII.GetString(fixedkey);
+        }
+
+        public static byte[] Encrypt(byte[] data)
+        {
+            return ToByteArray(Encrypt(ToUInt32Array(data, false)),false);
+        }
+        public static byte[] Decrypt(byte[] data)
+        {
+            return ToByteArray(Decrypt(ToUInt32Array(data, false)), false);
+        }
+        public static byte[] Encrypt(string data)
+        {
+            return ToByteArray(Encrypt(ToUInt32Array(Encoding.ASCII.GetBytes(data), false)), false);
         }
     }
 }
