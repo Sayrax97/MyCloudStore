@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 namespace CryptoLib.Cryptos
 {
+    /// <summary>
+    /// XXTEA algorithm for encryption and decryption
+    /// </summary>
     public class XXTEA
     {
         private static readonly UTF8Encoding utf8 = new UTF8Encoding();
@@ -127,18 +130,30 @@ namespace CryptoLib.Cryptos
             }
             return Encoding.ASCII.GetString(fixedkey);
         }
-
+        /// <summary>
+        /// XXTEA encryption method
+        /// </summary>
+        /// <param name="data">Data to be encrypted-ByteArray</param>
         public static byte[] Encrypt(byte[] data)
         {
             return ToByteArray(Encrypt(ToUInt32Array(data, false)),false);
         }
-        public static byte[] Decrypt(byte[] data)
-        {
-            return ToByteArray(Decrypt(ToUInt32Array(data, false)), false);
-        }
+        /// <summary>
+        /// XXTEA encryption method
+        /// </summary>
+        /// <param name="data">Data to be encrypted-string</param>
         public static byte[] Encrypt(string data)
         {
             return ToByteArray(Encrypt(ToUInt32Array(Encoding.ASCII.GetBytes(data), false)), false);
         }
+        /// <summary>
+        /// XXTEA decryption method
+        /// </summary>
+        /// <param name="data">Data to be decrypted-ByteArray</param>
+        public static byte[] Decrypt(byte[] data)
+        {
+            return ToByteArray(Decrypt(ToUInt32Array(data, false)), false);
+        }
+        
     }
 }

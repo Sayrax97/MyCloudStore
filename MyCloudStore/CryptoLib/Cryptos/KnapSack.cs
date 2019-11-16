@@ -6,6 +6,9 @@ using System.Linq;
 using System;
 namespace CryptoLib.Cryptos
 {
+    /// <summary>
+    /// Knapsack algorithm for encryption and decryption
+    /// </summary>
     public class KnapSack
     {
 
@@ -19,6 +22,9 @@ namespace CryptoLib.Cryptos
         private int _mInverse;
 
 
+        /// <summary>
+        /// KnapSack constructor - needed for algorithm to work
+        /// </summary>
         public KnapSack()
         {
             _n = 491;
@@ -35,6 +41,11 @@ namespace CryptoLib.Cryptos
             for (int i = 0; i < DataLength; i++)
                 _publicKey[i] = (_privateKey[i] * _m) % _n;
         }
+
+        /// <summary>
+        /// Knapsack private key setting method
+        /// </summary>
+        /// <param name="input">Int Array for private key</param>
         public bool SetKey(int[] input)
         {
             int sum = 0;
@@ -55,11 +66,12 @@ namespace CryptoLib.Cryptos
 
         }
 
+        /// <summary>
+        /// Knapsack encryption method
+        /// </summary>
+        /// <param name="input">Data to be encrypted</param>
         public byte[] Encrypt(byte[] input)
         {
-
-            Stopwatch sw=new Stopwatch();
-            sw.Start();
             var length = input.Length;
 
             var result = new int[length];
@@ -80,17 +92,17 @@ namespace CryptoLib.Cryptos
                 if (i != result.Length - 1)
                     sb.Append(" ");
             }
-            sw.Stop();
-            System.Console.WriteLine($"Milisecunde:{sw.ElapsedMilliseconds}");
             
             return Encoding.ASCII.GetBytes(sb.ToString());
 
         }
 
+        /// <summary>
+        /// Knapsack decryption method
+        /// </summary>
+        /// <param name="output">Data to be decrypted</param>
         public byte[] Decrypt(byte[] output)
         {
-            Stopwatch sw=new Stopwatch();
-            sw.Start();
             var stringOutput = Encoding.ASCII.GetString(output).Split(' ');
 
             var array = Array.ConvertAll(stringOutput, uint.Parse);
@@ -123,8 +135,6 @@ namespace CryptoLib.Cryptos
                 bits.CopyTo(result, i);
 
             }
-            sw.Stop();
-            System.Console.WriteLine($"Milisecunde:{sw.ElapsedMilliseconds}");
             return result;
         }
     }

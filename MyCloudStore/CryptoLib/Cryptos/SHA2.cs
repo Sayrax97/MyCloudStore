@@ -8,9 +8,12 @@ using System.Text;
 
 namespace CryptoLib.Cryptos
 {
+    /// <summary>
+    /// SHA2 hashing algorithm
+    /// </summary>
     public class SHA2
     {
-        static int INT_BITS = 32;
+        private static int INT_BITS = 32;
         private static UInt32[] H=
         {
             0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19
@@ -27,6 +30,10 @@ namespace CryptoLib.Cryptos
             0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa,0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         };
 
+        /// <summary>
+        /// SHA2 hashing method
+        /// </summary>
+        /// <param name="message">Message to be hashed</param>
         public string Hash(byte[] message)
         {
             Stopwatch sw = new Stopwatch();
@@ -118,11 +125,20 @@ namespace CryptoLib.Cryptos
             Console.WriteLine($"Elipsed ms: {sw.ElapsedMilliseconds}");
             return hesh;
         }
-        public uint RightRotate(uint n, int d)
+
+        /// <summary>
+        /// SHA2 hashing method
+        /// </summary>
+        /// <param name="message">Message to be hashed</param>
+        public string Hash(string message)
+        {
+            return Hash(Encoding.ASCII.GetBytes(message));
+        }
+        private uint RightRotate(uint n, int d)
         {
             return (n >> d) | (n << (INT_BITS - d));
         }
-        public static string ToBitString(BitArray bits)
+        private static string ToBitString(BitArray bits)
         {
             var sb = new StringBuilder();
 
@@ -134,7 +150,7 @@ namespace CryptoLib.Cryptos
 
             return sb.ToString();
         }
-        public static byte[] ToByteArray(BitArray bits)
+        private static byte[] ToByteArray(BitArray bits)
         {
             int numBytes = bits.Count / 8;
             if (bits.Count % 8 != 0) numBytes++;
