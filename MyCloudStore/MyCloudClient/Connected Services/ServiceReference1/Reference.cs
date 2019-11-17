@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestConsole.ServiceReference1 {
+namespace MyCloudClient.ServiceReference1 {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -47,12 +47,12 @@ namespace TestConsole.ServiceReference1 {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IService1Channel : TestConsole.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
+    public interface IService1Channel : MyCloudClient.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class Service1Client : System.ServiceModel.ClientBase<TestConsole.ServiceReference1.IService1>, TestConsole.ServiceReference1.IService1 {
+    public partial class Service1Client : System.ServiceModel.ClientBase<MyCloudClient.ServiceReference1.IService1>, MyCloudClient.ServiceReference1.IService1 {
         
         public Service1Client() {
         }

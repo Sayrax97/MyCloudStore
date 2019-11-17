@@ -32,18 +32,14 @@ namespace TestConsole
 
             //Image im = new Bitmap("C:/Users/MICE/Documents/GitHub/MyCloudStore/MyCloudStore/TestConsole/sven.png");
             //var imageBytes = ImageToByteArray(im);
-            var fileinfo = new FileInfo(@"D:\audio_sample.mp3");
+            var fileinfo = new FileInfo(@"D:\ygopro.avi");
             var file = File.ReadAllBytes(fileinfo.FullName);
 
-            sv1.Upload($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}.txt", XXTEA.Encrypt(file), "WickeD");
-            var filed = sv1.Download($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}.txt", "WickeD");
-            var decoded = XXTEA.Decrypt(filed);
-            File.WriteAllBytes(@"D:\grapha2.mp3", decoded);
-            var x = sv1.AllFiles("WickeD");
-            foreach (var item in x)
-            {
-                Console.WriteLine(item);
-            }
+            sv1.Upload($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}{fileinfo.Extension}", XXTEA.Encrypt(file), "WickeD");
+            //var filed = sv1.Download($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}.txt", "WickeD");
+            //var decoded = XXTEA.Decrypt(filed);
+            //File.WriteAllBytes(@"D:\grapha2.mp3", decoded);
+
             // var knap = new KnapSack();
             // var sw =System.Diagnostics.Stopwatch.StartNew();
             // var x=knap.Encrypt(txtb);

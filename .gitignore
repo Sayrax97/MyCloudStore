@@ -29,3 +29,5 @@ _ReSharper*/
 packages/
 .vs/
 App_Data/
+Temp/
+Download/

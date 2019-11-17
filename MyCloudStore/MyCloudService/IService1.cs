@@ -21,6 +21,10 @@ namespace MyCloudService
 
         [OperationContract]
         string[]  AllFiles(string userName);
+        [OperationContract]
+        bool FileExists(string fileName,string userName);
+        [OperationContract]
+        bool FolderExists(string folderName,string userName);
 
     }
 

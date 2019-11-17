@@ -49,8 +49,23 @@ namespace MyCloudService
         {
             var path = $"{RootFolder}/{userName}";
             string[] files=Directory.GetFiles(path);
+            for (int i = 0; i < files.Length; i++)
+            {
+                files[i] = Path.GetFileName(files[i]);
+            }
 
             return files;
+        }
+
+        public bool FileExists(string fileName, string userName)
+        {
+            var path = $"{RootFolder}/{userName}";
+            return File.Exists($"{path}/{fileName}");
+        }
+        public bool FolderExists(string folderName, string userName)
+        {
+            var path = $"{RootFolder}/{userName}";
+            return Directory.Exists($"{path}/{folderName}");
         }
     }
 }

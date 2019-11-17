@@ -12,6 +12,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudService", "MyCloudService\MyCloudService.csproj", "{F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCloudClient", "MyCloudClient\MyCloudClient.csproj", "{E53C7043-7EB7-43E5-A80E-F3E77C6AC79B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E} = {F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +35,10 @@ Global
 		{F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3B3C3C9-BBC0-41B8-A3CE-AA5428D2189E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E53C7043-7EB7-43E5-A80E-F3E77C6AC79B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E53C7043-7EB7-43E5-A80E-F3E77C6AC79B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E53C7043-7EB7-43E5-A80E-F3E77C6AC79B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E53C7043-7EB7-43E5-A80E-F3E77C6AC79B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
