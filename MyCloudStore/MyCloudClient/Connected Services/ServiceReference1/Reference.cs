@@ -44,6 +44,24 @@ namespace MyCloudClient.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FolderExists", ReplyAction="http://tempuri.org/IService1/FolderExistsResponse")]
         System.Threading.Tasks.Task<bool> FolderExistsAsync(string folderName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FileInfo", ReplyAction="http://tempuri.org/IService1/FileInfoResponse")]
+        System.IO.FileInfo FileInfo(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FileInfo", ReplyAction="http://tempuri.org/IService1/FileInfoResponse")]
+        System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RenameFile", ReplyAction="http://tempuri.org/IService1/RenameFileResponse")]
+        void RenameFile(string fileName, string userName, string newName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RenameFile", ReplyAction="http://tempuri.org/IService1/RenameFileResponse")]
+        System.Threading.Tasks.Task RenameFileAsync(string fileName, string userName, string newName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DeleteFile", ReplyAction="http://tempuri.org/IService1/DeleteFileResponse")]
+        void DeleteFile(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DeleteFile", ReplyAction="http://tempuri.org/IService1/DeleteFileResponse")]
+        System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -111,6 +129,30 @@ namespace MyCloudClient.ServiceReference1 {
         
         public System.Threading.Tasks.Task<bool> FolderExistsAsync(string folderName, string userName) {
             return base.Channel.FolderExistsAsync(folderName, userName);
+        }
+        
+        public System.IO.FileInfo FileInfo(string fileName, string userName) {
+            return base.Channel.FileInfo(fileName, userName);
+        }
+        
+        public System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName) {
+            return base.Channel.FileInfoAsync(fileName, userName);
+        }
+        
+        public void RenameFile(string fileName, string userName, string newName) {
+            base.Channel.RenameFile(fileName, userName, newName);
+        }
+        
+        public System.Threading.Tasks.Task RenameFileAsync(string fileName, string userName, string newName) {
+            return base.Channel.RenameFileAsync(fileName, userName, newName);
+        }
+        
+        public void DeleteFile(string fileName, string userName) {
+            base.Channel.DeleteFile(fileName, userName);
+        }
+        
+        public System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName) {
+            return base.Channel.DeleteFileAsync(fileName, userName);
         }
     }
 }

@@ -67,5 +67,24 @@ namespace MyCloudService
             var path = $"{RootFolder}/{userName}";
             return Directory.Exists($"{path}/{folderName}");
         }
+
+        public FileInfo FileInfo(string fileName, string userName)
+        {
+            var path = $"{RootFolder}/{userName}/{fileName}";
+            return new FileInfo(path);
+        }
+
+        public void RenameFile(string fileName, string userName, string newName)
+        {
+            var path1 = $"{RootFolder}/{userName}/{fileName}";
+            var path2 = $"{RootFolder}/{userName}/{newName}";
+            File.Move(path1, path2);
+        }
+
+        public void DeleteFile(string fileName, string userName)
+        {
+            var path1 = $"{RootFolder}/{userName}/{fileName}";
+            File.Delete(path1);
+        }
     }
 }

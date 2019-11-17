@@ -44,6 +44,12 @@ namespace TestConsole.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FolderExists", ReplyAction="http://tempuri.org/IService1/FolderExistsResponse")]
         System.Threading.Tasks.Task<bool> FolderExistsAsync(string folderName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FileInfo", ReplyAction="http://tempuri.org/IService1/FileInfoResponse")]
+        System.IO.FileInfo FileInfo(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FileInfo", ReplyAction="http://tempuri.org/IService1/FileInfoResponse")]
+        System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -111,6 +117,14 @@ namespace TestConsole.ServiceReference1 {
         
         public System.Threading.Tasks.Task<bool> FolderExistsAsync(string folderName, string userName) {
             return base.Channel.FolderExistsAsync(folderName, userName);
+        }
+        
+        public System.IO.FileInfo FileInfo(string fileName, string userName) {
+            return base.Channel.FileInfo(fileName, userName);
+        }
+        
+        public System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName) {
+            return base.Channel.FileInfoAsync(fileName, userName);
         }
     }
 }

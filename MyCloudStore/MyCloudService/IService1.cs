@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -25,6 +26,12 @@ namespace MyCloudService
         bool FileExists(string fileName,string userName);
         [OperationContract]
         bool FolderExists(string folderName,string userName);
+        [OperationContract]
+        FileInfo FileInfo(string fileName, string userName);
+        [OperationContract]
+        void RenameFile(string fileName, string userName,string newName);
+        [OperationContract]
+        void DeleteFile(string fileName, string userName);
 
     }
 

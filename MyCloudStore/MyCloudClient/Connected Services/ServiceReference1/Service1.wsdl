@@ -5,6 +5,7 @@
       <xsd:import schemaLocation="http://localhost:52979/Service1.svc?xsd=xsd0" namespace="http://tempuri.org/" />
       <xsd:import schemaLocation="http://localhost:52979/Service1.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://localhost:52979/Service1.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:52979/Service1.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/System.IO" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IService1_Upload_InputMessage">
@@ -37,6 +38,24 @@
   <wsdl:message name="IService1_FolderExists_OutputMessage">
     <wsdl:part name="parameters" element="tns:FolderExistsResponse" />
   </wsdl:message>
+  <wsdl:message name="IService1_FileInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:FileInfo" />
+  </wsdl:message>
+  <wsdl:message name="IService1_FileInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:FileInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RenameFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:RenameFile" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RenameFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RenameFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_DeleteFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFile" />
+  </wsdl:message>
+  <wsdl:message name="IService1_DeleteFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFileResponse" />
+  </wsdl:message>
   <wsdl:portType name="IService1">
     <wsdl:operation name="Upload">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/Upload" message="tns:IService1_Upload_InputMessage" />
@@ -57,6 +76,18 @@
     <wsdl:operation name="FolderExists">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/FolderExists" message="tns:IService1_FolderExists_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/FolderExistsResponse" message="tns:IService1_FolderExists_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="FileInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/FileInfo" message="tns:IService1_FileInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/FileInfoResponse" message="tns:IService1_FileInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RenameFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/RenameFile" message="tns:IService1_RenameFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/RenameFileResponse" message="tns:IService1_RenameFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/DeleteFile" message="tns:IService1_DeleteFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/DeleteFileResponse" message="tns:IService1_DeleteFile_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
@@ -99,6 +130,33 @@
     </wsdl:operation>
     <wsdl:operation name="FolderExists">
       <soap:operation soapAction="http://tempuri.org/IService1/FolderExists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileInfo">
+      <soap:operation soapAction="http://tempuri.org/IService1/FileInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RenameFile">
+      <soap:operation soapAction="http://tempuri.org/IService1/RenameFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFile">
+      <soap:operation soapAction="http://tempuri.org/IService1/DeleteFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
