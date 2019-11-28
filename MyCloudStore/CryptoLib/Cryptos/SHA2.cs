@@ -34,10 +34,8 @@ namespace CryptoLib.Cryptos
         /// SHA2 hashing method
         /// </summary>
         /// <param name="message">Message to be hashed</param>
-        public string Hash(byte[] message)
+        public static string Hash(byte[] message)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             //Pre-processing
             var bitMessage = new BitArray(message);
             var bitsLength=bitMessage.Length+1;
@@ -121,8 +119,14 @@ namespace CryptoLib.Cryptos
             {
                 hesh+=H[i].ToString("X");
             }
-            sw.Stop();
-            Console.WriteLine($"Elipsed ms: {sw.ElapsedMilliseconds}");
+            H[0] = 0x6a09e667;
+            H[1] = 0xbb67ae85;
+            H[2] = 0x3c6ef372;
+            H[3] = 0xa54ff53a;
+            H[4] = 0x510e527f;
+            H[5] = 0x9b05688c;
+            H[6] = 0x1f83d9ab;
+            H[7] = 0x5be0cd19;
             return hesh;
         }
 
@@ -130,11 +134,11 @@ namespace CryptoLib.Cryptos
         /// SHA2 hashing method
         /// </summary>
         /// <param name="message">Message to be hashed</param>
-        public string Hash(string message)
+        public static string Hash(string message)
         {
             return Hash(Encoding.ASCII.GetBytes(message));
         }
-        private uint RightRotate(uint n, int d)
+        private static uint RightRotate(uint n, int d)
         {
             return (n >> d) | (n << (INT_BITS - d));
         }

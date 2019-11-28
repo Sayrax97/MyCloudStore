@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Configuration;
 using System.IO;
@@ -11,14 +12,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MyCloudClient.ServiceReference1;
 using CryptoLib.Cryptos;
+using ServiceStack.Redis;
 
 namespace MyCloudClient
 {
     public partial class Form1 : Form
     {
-        List<string> _listFiles=new List<string>();
+        private List<string> _listFiles=new List<string>();
+        private string _host = "localhost:6379";
         private Service1Client _client;
-
+        private string _userName;
+        private RedisClient _redisClient;
         private static Dictionary<string, int> _extensions = new Dictionary<string, int>
         {
             {".png",0},
@@ -35,14 +39,21 @@ namespace MyCloudClient
             {".avi",11},
             {".xls",12}
         };
+
+        private static string _workingDirectory = Environment.CurrentDirectory;
+        private string _directoryPath = Directory.GetParent(_workingDirectory).Parent.FullName;
         public Form1()
         {
             InitializeComponent();
         }
-
+        public Form1(string userName)
+        {
+            InitializeComponent();
+            _userName = userName;
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
-            var path = @"C:\Users\MICE\Documents\GitHub\MyCloudStore\MyCloudStore\MyCloudClient\UIFiles\";
+            var path = _directoryPath + @"\UIFiles\";
             
             imageList1.Images.Add(new Bitmap($"{path}png.png"));
             imageList1.Images.Add(new Bitmap($"{path}jpg.png"));
@@ -59,8 +70,17 @@ namespace MyCloudClient
             imageList1.Images.Add(new Bitmap($"{path}xls.png"));
             _client= new Service1Client();
             GetAllFiles();
+            label1.Visible = false;
+            label2.Visible = false;
+            label3.Visible = false;
+            label4.Visible = false;
+            lblFileName.Visible = false;
+            lblExt.Visible = false;
+            lblSize.Visible = false;
+            lblTime.Visible = false;
+            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe");
+            _redisClient=new RedisClient(_host);
         }
-
         private void GetAllFiles()
         {
             _listFiles.Clear();
@@ -74,10 +94,17 @@ namespace MyCloudClient
         }
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
-            MessageBox.Show(@"You Opened: "+listView1.SelectedItems[0].Text);
+            var path = _directoryPath + @"\Download\" + listView1.SelectedItems[0].Text;
+            if (File.Exists(path))
+            {
+                Process.Start(path);
+            }
+            else
+            {
+                MessageBox.Show($@"File is not in your download folder.{Environment.NewLine}Please try to download it again", "File not found", MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
         }
-
-
         private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -87,25 +114,84 @@ namespace MyCloudClient
                     contextMenuStrip1.Show(Cursor.Position);
                 }
             }
-        }
 
-        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+            if (listView1.SelectedItems.Count>0)
+            {
+                label1.Visible = true;
+                label2.Visible = true;
+                label3.Visible = true;
+                label4.Visible = true;
+                lblFileName.Visible=true;
+                lblExt.Visible = true;
+                lblSize.Visible = true;
+                lblTime.Visible = true;
+            }
+            var info = _client.FileInfo(listView1.SelectedItems[0].Text, "WickeD");
+            var length = info.Length;
+            var unit = "B";
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "KB";
+            }
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "MB";
+            }
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "GB";
+            }
+
+            lblFileName.Text = Path.GetFileNameWithoutExtension(info.Name);
+            lblExt.Text = info.Extension;
+            lblSize.Text = $@"{length}{unit}";
+            lblTime.Text = info.CreationTime.ToLongTimeString();
+            
+        }
+        private async void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var path = @"C:\Users\MICE\Documents\GitHub\MyCloudStore\MyCloudStore\MyCloudClient\";
-            if (!Directory.Exists($"{path}Download"))
-                Directory.CreateDirectory($"{path}Download");
-            path += @"Download\";
+            var path = _directoryPath+@"\Download\";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
 
             var down = _client.Download(listView1.SelectedItems[0].Text, "WickeD");
             var data = XXTEA.Decrypt(down);
-            File.WriteAllBytes($"{path}{listView1.SelectedItems[0].Text}", data);
+            var hash = await Task.Run(() => GetHash(data));
+            var redisGet=_redisClient.Get<string>(listView1.SelectedItems[0].Text);
+            if(hash==redisGet)
+                File.WriteAllBytes($"{path}{listView1.SelectedItems[0].Text}", data);
+            else
+            {
+                MessageBox.Show($@"Error while downloading!{Environment.NewLine}Try again!!!", "Download Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var info=_client.FileInfo(listView1.SelectedItems[0].Text, "WickeD");
+            var length = info.Length;
+            var unit = "B";
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "KB";
+            }
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "MB";
+            }
+            if (length > 1024)
+            {
+                length /= 1024;
+                unit = "GB";
+            }
             MessageBox.Show(
-                $@"File Name: {info.Name} {System.Environment.NewLine} Size: {info.Length}Bytes {Environment.NewLine} Extension: {info.Extension} {Environment.NewLine} Creation time: {info.CreationTime}");
+                $@"File Name: {info.Name} {System.Environment.NewLine} Size: {length}{unit} {Environment.NewLine} Extension: {info.Extension} {Environment.NewLine} Creation time: {info.CreationTime}");
         }
 
         private void removeStripMenuItem1_Click(object sender, EventArgs e)
@@ -127,6 +213,41 @@ namespace MyCloudClient
             {
                 GetAllFiles();
             }
+        }
+
+        private async void btnUpload_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                InitialDirectory = _directoryPath,
+                Title = "Select File to Upload",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*",
+                FilterIndex = 3,
+                RestoreDirectory = true,
+
+                ReadOnlyChecked = true,
+                ShowReadOnly = true
+            };
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                var fileinfo = new FileInfo(ofd.FileName);
+                var file = File.ReadAllBytes(fileinfo.FullName);
+                var enc=XXTEA.Encrypt(file);
+                _client.Upload(ofd.SafeFileName, enc, "WickeD");
+                GetAllFiles();
+                var hash= await Task.Run(()=>GetHash(file));
+                _redisClient.Set(ofd.SafeFileName, hash);
+            }
+        }
+
+        private string GetHash(byte[] file)
+        {
+            return SHA2.Hash(file);
         }
     }
 }
