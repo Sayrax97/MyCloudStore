@@ -54,7 +54,6 @@ namespace MyCloudClient
         private void Form1_Load(object sender, EventArgs e)
         {
             var path = _directoryPath + @"\UIFiles\";
-            
             imageList1.Images.Add(new Bitmap($"{path}png.png"));
             imageList1.Images.Add(new Bitmap($"{path}jpg.png"));
             imageList1.Images.Add(new Bitmap($"{path}txt.png"));
@@ -92,7 +91,11 @@ namespace MyCloudClient
                 var ext = Path.GetExtension(item);
                 listView1.Items.Add(item, _extensions[ext]);
             }
-            lblStorageLeft.Text = _client.StorageLeft("WickeD").ToString()+ @"B/2000000000B";
+
+            var left = _client.StorageLeft("WickeD");
+            left /= 1024;
+            left /= 1024;
+            lblStorageLeft.Text = Math.Round(left,2)+ @"MB/2048MB";
         }
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
@@ -155,21 +158,9 @@ namespace MyCloudClient
         }
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var path = _directoryPath+@"\Download\";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var down = _client.Download(listView1.SelectedItems[0].Text, "WickeD");
-            var data = XXTEA.Decrypt(down);
-            //var hash = await Task.Run(() => GetHash(data));
-            var hash = GetHash(data);
-            var redisGet=_redisClient.Get<string>(listView1.SelectedItems[0].Text);
-            if(hash==redisGet)
-                File.WriteAllBytes($"{path}{listView1.SelectedItems[0].Text}", data);
-            else
+            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient))
             {
-                MessageBox.Show($@"Error while downloading!{Environment.NewLine}Try again!!!", "Download Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                lf.ShowDialog();
             }
         }
 
@@ -220,6 +211,12 @@ namespace MyCloudClient
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
+            if (comboBox1.SelectedItem == null)
+            {
+                MessageBox.Show(@"You need to select crypto algorithm before uploading", @"Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             OpenFileDialog ofd = new OpenFileDialog
             {
                 InitialDirectory = _directoryPath,
@@ -228,7 +225,7 @@ namespace MyCloudClient
                 CheckFileExists = true,
                 CheckPathExists = true,
 
-                Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*",
+                Filter = "txt files (*.txt)|*.txt|Image (*.jpg)|*.jpg|Image (*.png)|*.png|Image (*.gif)|*.gif|Image (*.bmp)|*.bmp|All files (*.*)|*.*",
                 FilterIndex = 3,
                 RestoreDirectory = true,
 
@@ -238,7 +235,7 @@ namespace MyCloudClient
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                using (LoadForm lf=new LoadForm("Upload",ofd.FileName, _client,ofd.SafeFileName,_redisClient))
+                using (LoadForm lf=new LoadForm(ofd.FileName, _client,ofd.SafeFileName,_redisClient))
                 {
                     lf.ShowDialog();
                 }

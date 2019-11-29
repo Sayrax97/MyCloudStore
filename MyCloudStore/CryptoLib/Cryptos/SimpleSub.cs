@@ -10,10 +10,28 @@ namespace CryptoLib.Cryptos
     public class SimpleSub
     {
         #region withString
-        private static List<Char> Azbuka { get; set; }
-        public static Dictionary<Char, Char> CryptKeyPair { get; set; }
-        public static Dictionary<Char, Char> DecryptKeyPair { get; set; }
-        public SimpleSub()
+        private  List<Char> Azbuka { get; set; }
+        private static readonly object padlock=new object();
+        private static SimpleSub _instance = null;
+        private  Dictionary<Char, Char> CryptKeyPair { get; set; }
+        private  Dictionary<Char, Char> DecryptKeyPair { get; set; }
+
+        public static SimpleSub Instance
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance=new SimpleSub();
+                    }
+
+                    return _instance;
+                }
+            }
+        }
+        private SimpleSub()
         {
             Azbuka = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray().ToList();
 
@@ -29,8 +47,6 @@ namespace CryptoLib.Cryptos
         }
         public string Encrypt(string sentence)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
             sentence = sentence.ToUpper();
             var encrypted = "";
             foreach (Char item in sentence)
@@ -42,8 +58,6 @@ namespace CryptoLib.Cryptos
                     encrypted += item;
                 }
             }
-            stopwatch.Stop();
-            System.Console.WriteLine($"Milisecunde:{stopwatch.ElapsedMilliseconds}");
             return encrypted;
 
         }

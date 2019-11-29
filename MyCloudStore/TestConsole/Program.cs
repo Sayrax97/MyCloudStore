@@ -30,17 +30,23 @@ namespace TestConsole
             var text2 = "Zastita informacija";
             Image im = new Bitmap("C:/Users/MICE/Documents/GitHub/MyCloudStore/MyCloudStore/TestConsole/sven.png");
             var imageBytes = ImageToByteArray(im);
-            var file = File.ReadAllBytes(@"C:\Users\MICE\Desktop\test.txt.txt");
+            var file = File.ReadAllBytes(@"C:\Users\MICE\Desktop\ZIProjekat2019.docx");
+            
+            var enc = SimpleSub.Instance.Encrypt(text);
+            var dec = SimpleSub.Instance.Decrypt(enc);
             //var fileinfo = new FileInfo(@"D:\ygopro.avi");
             //var file = File.ReadAllBytes(fileinfo.FullName);
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                SHA2.Hash(imageBytes);
-            stopwatch.Stop();
-            stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                SHA2.Hash(file);
-            stopwatch.Stop();
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
+               var x= SHA2.Hash(text.ToUpper());
+                var y=SHA2.Hash(dec);
+                if (x == y)
+                {
+                    Console.WriteLine("Radi");
+                }
+                else
+                {
+                    Console.WriteLine("Ne radi");
+                }
+
 
             //sv1.Upload($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}{fileinfo.Extension}", XXTEA.Encrypt(file), "WickeD");
             //var filed = sv1.Download($"{Path.GetFileNameWithoutExtension(fileinfo.Name)}.txt", "WickeD");
