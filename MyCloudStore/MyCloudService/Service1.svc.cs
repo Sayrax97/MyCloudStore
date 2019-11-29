@@ -48,6 +48,7 @@ namespace MyCloudService
         public string[] AllFiles(string userName)
         {
             var path = $"{RootFolder}/{userName}";
+            Directory.CreateDirectory(path);
             string[] files=Directory.GetFiles(path);
             for (int i = 0; i < files.Length; i++)
             {
@@ -85,6 +86,20 @@ namespace MyCloudService
         {
             var path1 = $"{RootFolder}/{userName}/{fileName}";
             File.Delete(path1);
+        }
+
+        public double StorageLeft(string userName)
+        {
+            var path = $"{RootFolder}/{userName}";
+            long size = 0;
+            var files=Directory.GetFiles(path, "*.*");
+            foreach (var file in files)
+            {
+                var fi = new FileInfo(file);
+                size +=fi.Length;
+            }
+
+            return size;
         }
     }
 }

@@ -79,6 +79,7 @@ namespace MyCloudClient
             lblSize.Visible = false;
             lblTime.Visible = false;
             Process.Start(_directoryPath + @"\Redis_db\redis-server.exe");
+            Process.Start(_directoryPath + @"\Redis_db\redis-cli.exe");
             _redisClient=new RedisClient(_host);
         }
         private void GetAllFiles()
@@ -91,6 +92,7 @@ namespace MyCloudClient
                 var ext = Path.GetExtension(item);
                 listView1.Items.Add(item, _extensions[ext]);
             }
+            lblStorageLeft.Text = _client.StorageLeft("WickeD").ToString()+ @"B/2000000000B";
         }
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
@@ -127,7 +129,7 @@ namespace MyCloudClient
                 lblTime.Visible = true;
             }
             var info = _client.FileInfo(listView1.SelectedItems[0].Text, "WickeD");
-            var length = info.Length;
+            double length = info.Length;
             var unit = "B";
             if (length > 1024)
             {
@@ -147,11 +149,11 @@ namespace MyCloudClient
 
             lblFileName.Text = Path.GetFileNameWithoutExtension(info.Name);
             lblExt.Text = info.Extension;
-            lblSize.Text = $@"{length}{unit}";
+            lblSize.Text = $@"{Math.Round(length,2)}{unit}";
             lblTime.Text = info.CreationTime.ToLongTimeString();
             
         }
-        private async void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var path = _directoryPath+@"\Download\";
             if (!Directory.Exists(path))
@@ -159,7 +161,8 @@ namespace MyCloudClient
 
             var down = _client.Download(listView1.SelectedItems[0].Text, "WickeD");
             var data = XXTEA.Decrypt(down);
-            var hash = await Task.Run(() => GetHash(data));
+            //var hash = await Task.Run(() => GetHash(data));
+            var hash = GetHash(data);
             var redisGet=_redisClient.Get<string>(listView1.SelectedItems[0].Text);
             if(hash==redisGet)
                 File.WriteAllBytes($"{path}{listView1.SelectedItems[0].Text}", data);
@@ -215,7 +218,7 @@ namespace MyCloudClient
             }
         }
 
-        private async void btnUpload_Click(object sender, EventArgs e)
+        private void btnUpload_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog
             {
@@ -235,13 +238,11 @@ namespace MyCloudClient
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                var fileinfo = new FileInfo(ofd.FileName);
-                var file = File.ReadAllBytes(fileinfo.FullName);
-                var enc=XXTEA.Encrypt(file);
-                _client.Upload(ofd.SafeFileName, enc, "WickeD");
+                using (LoadForm lf=new LoadForm("Upload",ofd.FileName, _client,ofd.SafeFileName,_redisClient))
+                {
+                    lf.ShowDialog();
+                }
                 GetAllFiles();
-                var hash= await Task.Run(()=>GetHash(file));
-                _redisClient.Set(ofd.SafeFileName, hash);
             }
         }
 

@@ -62,6 +62,12 @@ namespace MyCloudClient.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DeleteFile", ReplyAction="http://tempuri.org/IService1/DeleteFileResponse")]
         System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/StorageLeft", ReplyAction="http://tempuri.org/IService1/StorageLeftResponse")]
+        double StorageLeft(string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/StorageLeft", ReplyAction="http://tempuri.org/IService1/StorageLeftResponse")]
+        System.Threading.Tasks.Task<double> StorageLeftAsync(string userName);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -153,6 +159,14 @@ namespace MyCloudClient.ServiceReference1 {
         
         public System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName) {
             return base.Channel.DeleteFileAsync(fileName, userName);
+        }
+        
+        public double StorageLeft(string userName) {
+            return base.Channel.StorageLeft(userName);
+        }
+        
+        public System.Threading.Tasks.Task<double> StorageLeftAsync(string userName) {
+            return base.Channel.StorageLeftAsync(userName);
         }
     }
 }

@@ -32,6 +32,8 @@ namespace MyCloudService
         void RenameFile(string fileName, string userName,string newName);
         [OperationContract]
         void DeleteFile(string fileName, string userName);
+        [OperationContract]
+        double StorageLeft(string userName);
 
     }
 

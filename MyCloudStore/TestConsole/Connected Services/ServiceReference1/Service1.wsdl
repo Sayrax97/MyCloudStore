@@ -44,6 +44,24 @@
   <wsdl:message name="IService1_FileInfo_OutputMessage">
     <wsdl:part name="parameters" element="tns:FileInfoResponse" />
   </wsdl:message>
+  <wsdl:message name="IService1_RenameFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:RenameFile" />
+  </wsdl:message>
+  <wsdl:message name="IService1_RenameFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RenameFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_DeleteFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFile" />
+  </wsdl:message>
+  <wsdl:message name="IService1_DeleteFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_StorageLeft_InputMessage">
+    <wsdl:part name="parameters" element="tns:StorageLeft" />
+  </wsdl:message>
+  <wsdl:message name="IService1_StorageLeft_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StorageLeftResponse" />
+  </wsdl:message>
   <wsdl:portType name="IService1">
     <wsdl:operation name="Upload">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/Upload" message="tns:IService1_Upload_InputMessage" />
@@ -68,6 +86,18 @@
     <wsdl:operation name="FileInfo">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/FileInfo" message="tns:IService1_FileInfo_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/FileInfoResponse" message="tns:IService1_FileInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RenameFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/RenameFile" message="tns:IService1_RenameFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/RenameFileResponse" message="tns:IService1_RenameFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/DeleteFile" message="tns:IService1_DeleteFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/DeleteFileResponse" message="tns:IService1_DeleteFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="StorageLeft">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/StorageLeft" message="tns:IService1_StorageLeft_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/StorageLeftResponse" message="tns:IService1_StorageLeft_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
@@ -119,6 +149,33 @@
     </wsdl:operation>
     <wsdl:operation name="FileInfo">
       <soap:operation soapAction="http://tempuri.org/IService1/FileInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RenameFile">
+      <soap:operation soapAction="http://tempuri.org/IService1/RenameFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteFile">
+      <soap:operation soapAction="http://tempuri.org/IService1/DeleteFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="StorageLeft">
+      <soap:operation soapAction="http://tempuri.org/IService1/StorageLeft" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

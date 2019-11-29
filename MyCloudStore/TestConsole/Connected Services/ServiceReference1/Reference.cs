@@ -50,6 +50,24 @@ namespace TestConsole.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/FileInfo", ReplyAction="http://tempuri.org/IService1/FileInfoResponse")]
         System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RenameFile", ReplyAction="http://tempuri.org/IService1/RenameFileResponse")]
+        void RenameFile(string fileName, string userName, string newName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/RenameFile", ReplyAction="http://tempuri.org/IService1/RenameFileResponse")]
+        System.Threading.Tasks.Task RenameFileAsync(string fileName, string userName, string newName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DeleteFile", ReplyAction="http://tempuri.org/IService1/DeleteFileResponse")]
+        void DeleteFile(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DeleteFile", ReplyAction="http://tempuri.org/IService1/DeleteFileResponse")]
+        System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/StorageLeft", ReplyAction="http://tempuri.org/IService1/StorageLeftResponse")]
+        double StorageLeft(string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/StorageLeft", ReplyAction="http://tempuri.org/IService1/StorageLeftResponse")]
+        System.Threading.Tasks.Task<double> StorageLeftAsync(string userName);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -125,6 +143,30 @@ namespace TestConsole.ServiceReference1 {
         
         public System.Threading.Tasks.Task<System.IO.FileInfo> FileInfoAsync(string fileName, string userName) {
             return base.Channel.FileInfoAsync(fileName, userName);
+        }
+        
+        public void RenameFile(string fileName, string userName, string newName) {
+            base.Channel.RenameFile(fileName, userName, newName);
+        }
+        
+        public System.Threading.Tasks.Task RenameFileAsync(string fileName, string userName, string newName) {
+            return base.Channel.RenameFileAsync(fileName, userName, newName);
+        }
+        
+        public void DeleteFile(string fileName, string userName) {
+            base.Channel.DeleteFile(fileName, userName);
+        }
+        
+        public System.Threading.Tasks.Task DeleteFileAsync(string fileName, string userName) {
+            return base.Channel.DeleteFileAsync(fileName, userName);
+        }
+        
+        public double StorageLeft(string userName) {
+            return base.Channel.StorageLeft(userName);
+        }
+        
+        public System.Threading.Tasks.Task<double> StorageLeftAsync(string userName) {
+            return base.Channel.StorageLeftAsync(userName);
         }
     }
 }
