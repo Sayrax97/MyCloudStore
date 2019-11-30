@@ -95,7 +95,7 @@ namespace MyCloudClient
             var left = _client.StorageLeft("WickeD");
             left /= 1024;
             left /= 1024;
-            lblStorageLeft.Text = Math.Round(left,2)+ @"MB/2048MB";
+            lblStorageLeft.Text =  Math.Round(left,2)+ @"MB remaining";
         }
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
@@ -158,7 +158,7 @@ namespace MyCloudClient
         }
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient))
+            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient,comboBox1.Text))
             {
                 lf.ShowDialog();
             }
@@ -217,7 +217,8 @@ namespace MyCloudClient
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            OpenFileDialog ofd = new OpenFileDialog
+
+            using (OpenFileDialog ofd = new OpenFileDialog
             {
                 InitialDirectory = _directoryPath,
                 Title = "Select File to Upload",
@@ -225,22 +226,35 @@ namespace MyCloudClient
                 CheckFileExists = true,
                 CheckPathExists = true,
 
-                Filter = "txt files (*.txt)|*.txt|Image (*.jpg)|*.jpg|Image (*.png)|*.png|Image (*.gif)|*.gif|Image (*.bmp)|*.bmp|All files (*.*)|*.*",
-                FilterIndex = 3,
+                Filter = "txt files (*.txt)|*.txt|Image (*.jpg)|*.jpg|Image (*.png)|*.png|Video (*.mp4)|*.mp4|Video (*.avi)|*.avi|Audio (*.wav)|*.wav|Audio (*.mp3)|*.mp3|Document (*.doc)|*.doc|Document (*.pdf)|*.pdf|Document (*.xml)|*.xml|Document (*.json)|*.json|ZIP (*.zip)|*.zip|Excel (*.xls)|*.xls",
+                FilterIndex = 1,
                 RestoreDirectory = true,
 
                 ReadOnlyChecked = true,
                 ShowReadOnly = true
-            };
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            })
             {
-                using (LoadForm lf=new LoadForm(ofd.FileName, _client,ofd.SafeFileName,_redisClient))
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    lf.ShowDialog();
+                    using (LoadForm lf = new LoadForm(ofd.FileName, _client, ofd.SafeFileName, _redisClient, comboBox1.Text))
+                    {
+                        try
+                        {
+                            lf.ShowDialog();
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine(exception);
+                        }
+                    }
+                    GetAllFiles();
                 }
-                GetAllFiles();
+                ofd.Reset();
             }
+
+            
+
+            
         }
 
         private string GetHash(byte[] file)

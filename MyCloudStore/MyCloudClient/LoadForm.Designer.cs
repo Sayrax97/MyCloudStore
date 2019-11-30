@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadForm));
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblCaption = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -36,7 +37,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(26, 89);
+            this.progressBar1.Location = new System.Drawing.Point(26, 102);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(689, 37);
             this.progressBar1.TabIndex = 0;
@@ -62,6 +63,7 @@
             this.ClientSize = new System.Drawing.Size(727, 162);
             this.Controls.Add(this.lblCaption);
             this.Controls.Add(this.progressBar1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadForm";
             this.Text = "LoadForm";
             this.ResumeLayout(false);

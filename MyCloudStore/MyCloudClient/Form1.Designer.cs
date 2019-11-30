@@ -261,6 +261,7 @@
             this.Controls.Add(this.lblFileName);
             this.Controls.Add(this.btnUpload);
             this.Controls.Add(this.listView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "MyCloudStore";
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -9,13 +9,33 @@ namespace CryptoLib.Cryptos
     /// <summary>
     /// XXTEA algorithm for encryption and decryption
     /// </summary>
-    public class XXTEA
+    public class XXTEA:ICryptos
     {
         private static readonly UTF8Encoding utf8 = new UTF8Encoding();
 
         private const UInt32 delta = 0x9E3779B9;
         private const string key = "DusanJankovic";
+        private static readonly object padlock = new object();
+        private static XXTEA _instance = null;
+        private XXTEA()
+        {
+            
+        }
+        public static XXTEA Instance
+        {
+            get
+            {
+                lock (padlock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new XXTEA();
+                    }
 
+                    return _instance;
+                }
+            }
+        }
         private static UInt32 MX(UInt32 sum, UInt32 y, UInt32 z, Int32 p, UInt32 e, UInt32[] k)
         {
             return (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (k[p & 3 ^ e] ^ z);
@@ -134,7 +154,7 @@ namespace CryptoLib.Cryptos
         /// XXTEA encryption method
         /// </summary>
         /// <param name="data">Data to be encrypted-ByteArray</param>
-        public static byte[] Encrypt(byte[] data)
+        public byte[] Encrypt(byte[] data)
         {
             return ToByteArray(Encrypt(ToUInt32Array(data, false)),false);
         }
@@ -142,7 +162,7 @@ namespace CryptoLib.Cryptos
         /// XXTEA encryption method
         /// </summary>
         /// <param name="data">Data to be encrypted-string</param>
-        public static byte[] Encrypt(string data)
+        public byte[] Encrypt(string data)
         {
             return ToByteArray(Encrypt(ToUInt32Array(Encoding.ASCII.GetBytes(data), false)), false);
         }
@@ -150,7 +170,7 @@ namespace CryptoLib.Cryptos
         /// XXTEA decryption method
         /// </summary>
         /// <param name="data">Data to be decrypted-ByteArray</param>
-        public static byte[] Decrypt(byte[] data)
+        public byte[] Decrypt(byte[] data)
         {
             return ToByteArray(Decrypt(ToUInt32Array(data, false)), false);
         }

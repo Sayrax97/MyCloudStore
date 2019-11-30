@@ -90,8 +90,9 @@ namespace MyCloudService
 
         public double StorageLeft(string userName)
         {
+            var  maxStorage = 2147483648;
             var path = $"{RootFolder}/{userName}";
-            long size = 0;
+            double size = 0;
             var files=Directory.GetFiles(path, "*.*");
             foreach (var file in files)
             {
@@ -99,7 +100,8 @@ namespace MyCloudService
                 size +=fi.Length;
             }
 
-            return size;
+            double left = maxStorage - size;
+            return left;
         }
     }
 }

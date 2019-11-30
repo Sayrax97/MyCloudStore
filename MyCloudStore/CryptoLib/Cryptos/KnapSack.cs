@@ -9,7 +9,7 @@ namespace CryptoLib.Cryptos
     /// <summary>
     /// Knapsack algorithm for encryption and decryption
     /// </summary>
-    public class KnapSack
+    public class KnapSack:ICryptos
     {
 
         private const byte DataLength = 8;

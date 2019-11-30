@@ -87,7 +87,6 @@
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.ImageLocation = "C:\\Users\\MICE\\Documents\\GitHub\\MyCloudStore\\MyCloudStore\\MyCloudClient\\UIFiles\\";
             this.pictureBox1.InitialImage = null;
             this.pictureBox1.Location = new System.Drawing.Point(13, 9);
@@ -117,6 +116,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.textBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RenameFileForm";
             this.Text = "Rename File";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Cryptos\ICryptos.cs" />
     <Compile Include="Cryptos\KnapSack.cs" />
     <Compile Include="Cryptos\SHA2.cs" />
     <Compile Include="Cryptos\SimpleSub.cs" />

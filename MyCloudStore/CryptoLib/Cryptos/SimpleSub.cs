@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CryptoLib.Cryptos
 {
-    public class SimpleSub
+    public class SimpleSub:ICryptos
     {
         #region withString
         private  List<Char> Azbuka { get; set; }
@@ -44,6 +44,14 @@ namespace CryptoLib.Cryptos
               .ToDictionary(x => x.k, x => x.v);
             DecryptKeyPair = shuffled.Zip(Azbuka, (k, v) => new { k, v })
               .ToDictionary(x => x.v, x => x.k);
+        }
+
+        public byte[] Encrypt(byte[] value)
+        {
+            return Encoding.ASCII.GetBytes(Encrypt(Encoding.ASCII.GetString(value)));
+        }public byte[] Decrypt(byte[] value)
+        {
+            return Encoding.ASCII.GetBytes(Decrypt(Encoding.ASCII.GetString(value)));
         }
         public string Encrypt(string sentence)
         {
