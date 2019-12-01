@@ -70,13 +70,14 @@ namespace CryptoLib.Cryptos
             //    bitMessage[j] = bitMessage[j] | bit64Array[i];
             //}
             //Process the message in successive 512-bit chunks
-            int Nochunks = bitMessage.Length/512;
+            int nOfchunks = bitMessage.Length/512;
             var chunkBoolArray = new bool[bitMessage.Length];
             bitMessage.CopyTo(chunkBoolArray, 0);
-            for (int i = 0; i < Nochunks; i++)
+            for (int i = 0; i < nOfchunks; i++)
             {
-
-                var chunk = new BitArray(chunkBoolArray.Skip(512*i).Take(512).ToArray());
+                var chunk = new bool[512];
+                Buffer.BlockCopy(chunkBoolArray,i*512,chunk,0,512);
+                //var chunk = new BitArray(chunkBoolArray.Skip(512*i).Take(512).ToArray());
                 var w =new uint[64];
                 for (int j = 0; j < 16; j++)
                 {
