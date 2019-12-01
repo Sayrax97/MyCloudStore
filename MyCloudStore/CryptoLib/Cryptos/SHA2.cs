@@ -36,29 +36,43 @@ namespace CryptoLib.Cryptos
         /// <param name="message">Message to be hashed</param>
         public static string Hash(byte[] message)
         {
-            //Pre-processing
             var bitMessage = new BitArray(message);
-            var bitsLength=bitMessage.Length+1;
-            var remainder=bitsLength%512;
-            bitsLength+=448-remainder;
-
-            var bits=new BitArray(bitsLength+64);
-            bits.Set(bitMessage.Length, true);
-
-            for (int i = 0; i < bitMessage.Length; i++)
+            bitMessage = Append(bitMessage, new BitArray(new[] { true }));
+            var bitsLength = bitMessage.Length + 1;
+            var remainder = bitsLength % 512;
+            if(remainder<=448)
+                remainder = 448 - remainder;
+            else
             {
-                bits[i] = bits[i] | bitMessage[i];
+                remainder = 512 - remainder + 448;
             }
+            bitMessage = Append(bitMessage, new BitArray(remainder, false));
             UInt64 integer64 = (ulong)bitMessage.Length;
             var bit64Array = new BitArray(BitConverter.GetBytes(integer64));
-            for (int i = 0, j=448; i < bit64Array.Length; i++,j++)
-            {
-                bits[j] = bits[j] | bit64Array[i];
-            }
+            bitMessage = Append(bitMessage, new BitArray(bit64Array));
+
+            //var bitMessage = new BitArray(message);
+            //var bitsLength = bitMessage.Length + 1;
+            //var remainder = bitsLength % 512;
+            //bitsLength += 448 - remainder;
+
+            //var bits =new BitArray(bitsLength+64);
+            //bits.Set(bitMessage.Length, true);
+
+            //for (int i = 0; i < bitMessage.Length; i++)
+            //{
+            //    bits[i] = bits[i] | bitMessage[i];
+            //}
+            //UInt64 integer64 = (ulong)bitMessage.Length;
+            //var bit64Array = new BitArray(BitConverter.GetBytes(integer64));
+            //for (int i = 0, j=448; i < bit64Array.Length; i++,j++)
+            //{
+            //    bitMessage[j] = bitMessage[j] | bit64Array[i];
+            //}
             //Process the message in successive 512-bit chunks
-            int Nochunks =bits.Length/512;
-            var chunkBoolArray = new bool[bits.Length];
-            bits.CopyTo(chunkBoolArray, 0);
+            int Nochunks = bitMessage.Length/512;
+            var chunkBoolArray = new bool[bitMessage.Length];
+            bitMessage.CopyTo(chunkBoolArray, 0);
             for (int i = 0; i < Nochunks; i++)
             {
 
@@ -159,6 +173,21 @@ namespace CryptoLib.Cryptos
             byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
             bits.CopyTo(ret, 0);
             return ret;
+        }
+        public static BitArray Prepend(BitArray current, BitArray before)
+        {
+            var bools = new bool[current.Count + before.Count];
+            before.CopyTo(bools, 0);
+            current.CopyTo(bools, before.Count);
+            return new BitArray(bools);
+        }
+
+        public static BitArray Append(BitArray current, BitArray after)
+        {
+            var bools = new bool[current.Count + after.Count];
+            current.CopyTo(bools, 0);
+            after.CopyTo(bools, current.Count);
+            return new BitArray(bools);
         }
     }
 }

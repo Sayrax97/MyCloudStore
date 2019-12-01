@@ -156,6 +156,12 @@ namespace CryptoLib.Cryptos
         /// <param name="data">Data to be encrypted-ByteArray</param>
         public byte[] Encrypt(byte[] data)
         {
+            //uint[] decoded = new uint[data.Length / 4];
+            //Array.Copy(data, 0, decoded, 0, data.Length);
+            //var uintArray = Encrypt(decoded);
+            //byte[] byteArray = new byte[uintArray.Length * 4];
+            //Buffer.BlockCopy(uintArray, 0, byteArray, 0, uintArray.Length * 4);
+            //return byteArray;
             return ToByteArray(Encrypt(ToUInt32Array(data, false)),false);
         }
         /// <summary>

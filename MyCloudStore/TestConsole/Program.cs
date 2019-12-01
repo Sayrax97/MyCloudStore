@@ -30,13 +30,15 @@ namespace TestConsole
             var text2 = "Zastita informacija";
             Image im = new Bitmap("C:/Users/MICE/Documents/GitHub/MyCloudStore/MyCloudStore/TestConsole/sven.png");
             var imageBytes = ImageToByteArray(im);
-            var file = File.ReadAllBytes(@"C:\Users\MICE\Desktop\ZIProjekat2019.docx");
-            
-            var enc = SimpleSub.Instance.Encrypt(text);
-            var dec = SimpleSub.Instance.Decrypt(enc);
+            var file = File.ReadAllBytes(@"C:\Users\MICE\Desktop\web.txt");
+            //var ost = file.Length % 4;
+            //var fileFixed = new byte[file.Length+ost];
+            //file.CopyTo(fileFixed,0);
+            var enc = XXTEA.Instance.Encrypt(file);
+            var dec = XXTEA.Instance.Decrypt(enc);
             //var fileinfo = new FileInfo(@"D:\ygopro.avi");
             //var file = File.ReadAllBytes(fileinfo.FullName);
-               var x= SHA2.Hash(text.ToUpper());
+               var x= SHA2.Hash(file);
                 var y=SHA2.Hash(dec);
                 if (x == y)
                 {
