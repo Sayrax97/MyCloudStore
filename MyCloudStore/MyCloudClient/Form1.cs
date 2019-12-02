@@ -158,7 +158,7 @@ namespace MyCloudClient
         }
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient,comboBox1.Text))
+            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient))
             {
                 lf.ShowDialog();
             }

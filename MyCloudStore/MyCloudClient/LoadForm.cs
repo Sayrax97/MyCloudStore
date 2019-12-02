@@ -20,6 +20,7 @@ namespace MyCloudClient
         private static ICryptos _crypto;
         private static string _workingDirectory = Environment.CurrentDirectory;
         private string _directoryPath = Directory.GetParent(_workingDirectory).Parent.FullName;
+        private byte[] _algByte;
         public LoadForm()
         {
             InitializeComponent();
@@ -37,16 +38,25 @@ namespace MyCloudClient
             progressBar1.Style = ProgressBarStyle.Marquee;
             timer1.Start();
             if(algorithm=="Knapsack")
-                _crypto=new KnapSack();
+            {
+                _crypto = new KnapSack();
+                _algByte = Encoding.ASCII.GetBytes("K");
+            }
             else if(algorithm== "SimpleSubstitution")
-                _crypto=SimpleSub.Instance;
+            {
+                _crypto = SimpleSub.Instance;
+                _algByte = Encoding.ASCII.GetBytes("S");
+            }
             else if(algorithm=="XXTEA")
-                _crypto=XXTEA.Instance;
+            {
+                _crypto = XXTEA.Instance;
+                _algByte = Encoding.ASCII.GetBytes("X");
+            }
             UploadFile(fileName, _client, SafeFileName, _redisClient);
             
 
         }
-        public LoadForm(string fileName, Service1Client _client, RedisClient _redisClient, string algorithm)
+        public LoadForm(string fileName, Service1Client _client, RedisClient _redisClient)
         {
             //download constructor
             InitializeComponent();
@@ -57,12 +67,6 @@ namespace MyCloudClient
             timer1.Interval = 250;
             progressBar1.Style = ProgressBarStyle.Marquee;
             timer1.Start();
-            if (algorithm == "Knapsack")
-                _crypto = new KnapSack();
-            else if (algorithm == "SimpleSubstitution")
-                _crypto = SimpleSub.Instance;
-            else if (algorithm == "XXTEA")
-                _crypto = XXTEA.Instance;
             DownloadFile(fileName, _client, _redisClient);
 
         }
@@ -73,8 +77,23 @@ namespace MyCloudClient
                 Directory.CreateDirectory(path);
 
             var down = _client.Download(fileName, "WickeD");
-            var data = _crypto.Decrypt(down);
-            var hash = await Task.Run(() => GetHash(data));
+            var dataWithoutAlgorithamByte = new byte[down.Length - 1];
+            _algByte = new Byte[] {down[down.Length - 1]};
+            if (Encoding.ASCII.GetString(_algByte) == "X")
+            {
+                _crypto = XXTEA.Instance;
+            }
+            else if(Encoding.ASCII.GetString(_algByte) == "K")
+            {
+                _crypto= new KnapSack();
+            }
+            else if(Encoding.ASCII.GetString(_algByte) == "S")
+            {
+                _crypto= SimpleSub.Instance;
+            }
+            Buffer.BlockCopy(down,0,dataWithoutAlgorithamByte,0,down.Length-1);
+            var data = _crypto.Decrypt(dataWithoutAlgorithamByte);
+            var hash = await Task.Run(() => GetHash(dataWithoutAlgorithamByte));
             //var hash = GetHash(data);
             var redisGet = _redisClient.Get<string>(fileName);
             if (hash == redisGet)
@@ -101,8 +120,9 @@ namespace MyCloudClient
                 }
 
                 var enc = _crypto.Encrypt(file);
-                _client.Upload(SafeFileName, enc, "WickeD");
-                var hash = await Task.Run(() => GetHash(file));
+                var encWithAlgorithm = Append(enc, _algByte);
+                _client.Upload(SafeFileName, encWithAlgorithm, "WickeD");
+                var hash = await Task.Run(() => GetHash(enc));
                 //var hash = GetHash(file);
                 _redisClient.Set(SafeFileName, hash);
                 timer1.Stop();
@@ -125,6 +145,13 @@ namespace MyCloudClient
         private string GetHash(byte[] file)
         {
             return SHA2.Hash(file);
+        }
+        public static byte[] Append(byte[] current, byte[] after)
+        {
+            var bytes = new byte[current.Length + after.Length];
+            current.CopyTo(bytes, 0);
+            after.CopyTo(bytes, current.Length);
+            return bytes;
         }
     }
 }
