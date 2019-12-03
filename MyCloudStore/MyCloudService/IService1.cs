@@ -16,9 +16,14 @@ namespace MyCloudService
 
         [OperationContract]
         string  Upload(string fileName,byte[] data,string userName);
+        [OperationContract]
+        string  UploadWithChunks(string fileName,byte[] data,string userName,int chunkId,long length,bool last);
         
         [OperationContract]
         byte[]  Download(string fileName,string userName);
+
+        [OperationContract]
+        byte[] DownloadWithChunks(string fileName, string userName, int chunkId);
 
         [OperationContract]
         string[]  AllFiles(string userName);

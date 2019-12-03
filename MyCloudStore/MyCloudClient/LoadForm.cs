@@ -21,6 +21,7 @@ namespace MyCloudClient
         private static string _workingDirectory = Environment.CurrentDirectory;
         private string _directoryPath = Directory.GetParent(_workingDirectory).Parent.FullName;
         private byte[] _algByte;
+        private const int CHUNK= 1048576;
         public LoadForm()
         {
             InitializeComponent();
@@ -72,11 +73,20 @@ namespace MyCloudClient
         }
         private async void DownloadFile(string fileName, Service1Client _client, RedisClient _redisClient)
         {
+            var fileinfo = _client.FileInfo(fileName, "WickeD");
             var path = _directoryPath + @"\Download\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var down = _client.Download(fileName, "WickeD");
+            var nChunks = fileinfo.Length / CHUNK + 1;
+            var down = new byte[fileinfo.Length];
+            for (int i = 0; i < nChunks; i++)
+            {
+                var Downdata = _client.DownloadWithChunks(fileinfo.Name, "WickeD", i);
+                Buffer.BlockCopy(Downdata, 0, down, i * CHUNK, Downdata.Length);
+            }
+
+            //var down = _client.Download(fileName, "WickeD");
             var dataWithoutAlgorithamByte = new byte[down.Length - 1];
             _algByte = new Byte[] {down[down.Length - 1]};
             if (Encoding.ASCII.GetString(_algByte) == "X")
@@ -113,15 +123,23 @@ namespace MyCloudClient
             {
                 var cloudSize = _client.StorageLeft("WickeD");
                 var fileinfo = new FileInfo(FileName);
+
                 var file = File.ReadAllBytes(fileinfo.FullName);
                 if (file.Length > cloudSize)
                 {
                     throw  new IOException("File you want to upload exceeds your storage left!!");
                 }
-
+                //var file = new byte[stream.Length];
                 var enc = _crypto.Encrypt(file);
                 var encWithAlgorithm = Append(enc, _algByte);
-                _client.Upload(SafeFileName, encWithAlgorithm, "WickeD");
+                for (int i = 0,j=0; i < encWithAlgorithm.LongLength; i+=CHUNK,j++)
+                {
+                    var razlika = encWithAlgorithm.Length - i;
+                    var chunk = new byte[razlika < CHUNK ? razlika : CHUNK];
+                    Buffer.BlockCopy(encWithAlgorithm,i,chunk,0, razlika < CHUNK ? (int)razlika : CHUNK);
+                    _client.UploadWithChunks(fileinfo.Name, chunk, "WickeD", j, encWithAlgorithm.LongLength, i + CHUNK >= encWithAlgorithm.Length);
+                }
+                //_client.Upload(SafeFileName, encWithAlgorithm, "WickeD");
                 var hash = await Task.Run(() => GetHash(enc));
                 //var hash = GetHash(file);
                 _redisClient.Set(SafeFileName, hash);

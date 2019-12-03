@@ -34,16 +34,30 @@ namespace TestConsole
         static void Main(string[] args)
         {
             var sv1 = new Service1Client();
+            var sw = new System.Diagnostics.Stopwatch();
             var text= "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
             var text2 = "Zastita informacija";
             Image im = new Bitmap("C:/Users/MICE/Documents/GitHub/MyCloudStore/MyCloudStore/TestConsole/sven.png");
             var imageBytes = ImageToByteArray(im);
+            var fileinfo = new FileInfo(@"C:\Users\MICE\Documents\GitHub\MyCloudStore\MyCloudStore\MyCloudService\Temp\WickeD\Adam Lambert - Ghost Town.mp3");
             var file = File.ReadAllBytes(@"C:/Users/MICE/Documents/GitHub/MyCloudStore/MyCloudStore/TestConsole/sven.png");
+            var CHUNK = 1048576;
+            sw.Start();
+            var nChunks = fileinfo.Length / CHUNK + 1;
+            var down = new byte[fileinfo.Length];
+            for (int i = 0; i < nChunks; i++)
+            {
+               var data=sv1.DownloadWithChunks(fileinfo.Name, "WickeD", i);
+                Buffer.BlockCopy(data,0,down,i*CHUNK,data.Length);
+            }
+            File.WriteAllBytes(@"C:\Users\MICE\Desktop\file.mp3",down);
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
             //var ost = file.Length % 4;
             //var fileFixed = new byte[file.Length+ost];
             //file.CopyTo(fileFixed,0);
             var ch = Encoding.ASCII.GetBytes("X");
-            var sw = System.Diagnostics.Stopwatch.StartNew();
+            
             var kn = SimpleSub.Instance;
             var enc = kn.Encrypt(file);
             sw.Stop();

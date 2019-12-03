@@ -15,7 +15,8 @@ namespace MyCloudService
     public class Service1 : IService1
     {
         private string _directoryPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath+"Temp";
-
+        private static Dictionary<string, byte[]> _chunks=new Dictionary<string, byte[]>();
+        private const int CHUNK_SIZE= 1048576;
 
         public string Upload(string fileName, byte[] data, string userName)
         {
@@ -32,6 +33,44 @@ namespace MyCloudService
                 throw;
             }
         }
+
+        public string UploadWithChunks(string fileName, byte[] data, string userName, int chunkId, long length,bool last)
+        {
+            try
+            {
+                var path = $@"{_directoryPath}\{userName}";
+                if(chunkId==0)
+                {
+                    if(!_chunks.ContainsKey(userName))
+                        _chunks.Add(userName,new byte[length]);
+                    else
+                    {
+                        _chunks[userName]=new byte[length];
+                    }
+                    Buffer.BlockCopy(data, 0, _chunks[userName], 0,
+                        data.Length < CHUNK_SIZE ? data.Length : CHUNK_SIZE);
+                }
+                else
+                {
+                    Buffer.BlockCopy(data, 0, _chunks[userName], chunkId*CHUNK_SIZE,
+                         last?data.Length:CHUNK_SIZE);
+                }
+
+                if (last)
+                {
+                    Directory.CreateDirectory(path);
+                    File.WriteAllBytes($@"{path}\{fileName}", _chunks[userName]);
+                }
+                return "Uploaded";
+
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
         public byte[] Download(string fileName, string userName)
         {
             try
@@ -44,6 +83,39 @@ namespace MyCloudService
                 throw;
             }
         }
+
+        public byte[] DownloadWithChunks(string fileName, string userName, int chunkId)
+        {
+            try
+            {
+                FileInfo fi = FileInfo(fileName, userName);
+                var data = new byte[fi.Length - chunkId * CHUNK_SIZE < CHUNK_SIZE ? fi.Length - chunkId * CHUNK_SIZE : CHUNK_SIZE];
+                var path = $@"{_directoryPath}\{userName}\{fileName}";
+                if (chunkId == 0)
+                {
+                    if (!_chunks.ContainsKey(userName))
+                        _chunks.Add(userName, new byte[fi.Length]);
+                    else
+                        _chunks[userName] = new byte[fi.Length];
+                    Buffer.BlockCopy(File.ReadAllBytes(path),0,_chunks[userName],0,_chunks[userName].Length);
+                    Buffer.BlockCopy(_chunks[userName], 0, data, 0,
+                        data.Length);
+                }
+                else
+                {
+                    Buffer.BlockCopy(_chunks[userName], chunkId*CHUNK_SIZE, data, 0,
+                        data.Length);
+                }
+                return data;
+
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
 
         public string[] AllFiles(string userName)
         {
@@ -102,6 +174,13 @@ namespace MyCloudService
 
             double left = maxStorage - size;
             return left;
+        }
+        private byte[] Append(byte[] current, byte[] after)
+        {
+            var bytes = new byte[current.Length + after.Length];
+            current.CopyTo(bytes, 0);
+            after.CopyTo(bytes, current.Length);
+            return bytes;
         }
     }
 }

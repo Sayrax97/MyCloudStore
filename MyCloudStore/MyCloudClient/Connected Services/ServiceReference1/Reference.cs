@@ -21,11 +21,23 @@ namespace MyCloudClient.ServiceReference1 {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/Upload", ReplyAction="http://tempuri.org/IService1/UploadResponse")]
         System.Threading.Tasks.Task<string> UploadAsync(string fileName, byte[] data, string userName);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/UploadWithChunks", ReplyAction="http://tempuri.org/IService1/UploadWithChunksResponse")]
+        string UploadWithChunks(string fileName, byte[] data, string userName, int chunkId, long length, bool last);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/UploadWithChunks", ReplyAction="http://tempuri.org/IService1/UploadWithChunksResponse")]
+        System.Threading.Tasks.Task<string> UploadWithChunksAsync(string fileName, byte[] data, string userName, int chunkId, long length, bool last);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/Download", ReplyAction="http://tempuri.org/IService1/DownloadResponse")]
         byte[] Download(string fileName, string userName);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/Download", ReplyAction="http://tempuri.org/IService1/DownloadResponse")]
         System.Threading.Tasks.Task<byte[]> DownloadAsync(string fileName, string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DownloadWithChunks", ReplyAction="http://tempuri.org/IService1/DownloadWithChunksResponse")]
+        byte[] DownloadWithChunks(string fileName, string userName, int chunkId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/DownloadWithChunks", ReplyAction="http://tempuri.org/IService1/DownloadWithChunksResponse")]
+        System.Threading.Tasks.Task<byte[]> DownloadWithChunksAsync(string fileName, string userName, int chunkId);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/AllFiles", ReplyAction="http://tempuri.org/IService1/AllFilesResponse")]
         string[] AllFiles(string userName);
@@ -105,12 +117,28 @@ namespace MyCloudClient.ServiceReference1 {
             return base.Channel.UploadAsync(fileName, data, userName);
         }
         
+        public string UploadWithChunks(string fileName, byte[] data, string userName, int chunkId, long length, bool last) {
+            return base.Channel.UploadWithChunks(fileName, data, userName, chunkId, length, last);
+        }
+        
+        public System.Threading.Tasks.Task<string> UploadWithChunksAsync(string fileName, byte[] data, string userName, int chunkId, long length, bool last) {
+            return base.Channel.UploadWithChunksAsync(fileName, data, userName, chunkId, length, last);
+        }
+        
         public byte[] Download(string fileName, string userName) {
             return base.Channel.Download(fileName, userName);
         }
         
         public System.Threading.Tasks.Task<byte[]> DownloadAsync(string fileName, string userName) {
             return base.Channel.DownloadAsync(fileName, userName);
+        }
+        
+        public byte[] DownloadWithChunks(string fileName, string userName, int chunkId) {
+            return base.Channel.DownloadWithChunks(fileName, userName, chunkId);
+        }
+        
+        public System.Threading.Tasks.Task<byte[]> DownloadWithChunksAsync(string fileName, string userName, int chunkId) {
+            return base.Channel.DownloadWithChunksAsync(fileName, userName, chunkId);
         }
         
         public string[] AllFiles(string userName) {
