@@ -21,18 +21,22 @@ namespace MyCloudClient
         private static string _workingDirectory = Environment.CurrentDirectory;
         private string _directoryPath = Directory.GetParent(_workingDirectory).Parent.FullName;
         private byte[] _algByte;
+        private static string _host = "localhost:6379";
+        private static RedisClient _redisClient= new RedisClient(_host);
         private const int CHUNK= 1048576;
+        private string _userName;
         public LoadForm()
         {
             InitializeComponent();
         }
 
-        public LoadForm(string fileName, Service1Client _client,string SafeFileName,RedisClient _redisClient,string algorithm)
+        public LoadForm(string fileName, Service1Client _client,string SafeFileName,string algorithm,string userName)
         { 
             //upload constructor
             InitializeComponent();
+            _userName = userName;
             this.ControlBox = false;
-            lblCaption.Text = $@"File {fileName}{Environment.NewLine} is uploading and encrypting!{Environment.NewLine} Please wait";
+            lblCaption.Text = $@"File {Path.GetFileName(fileName)}{Environment.NewLine} is uploading and encrypting!{Environment.NewLine} Please wait";
             this.Text = @"Uploading...";
             progressBar1.Maximum = 20;
             timer1.Interval = 250;
@@ -53,27 +57,28 @@ namespace MyCloudClient
                 _crypto = XXTEA.Instance;
                 _algByte = Encoding.ASCII.GetBytes("X");
             }
-            UploadFile(fileName, _client, SafeFileName, _redisClient);
+            UploadFile(fileName, _client, SafeFileName);
             
 
         }
-        public LoadForm(string fileName, Service1Client _client, RedisClient _redisClient)
+        public LoadForm(string fileName, Service1Client _client, string userName)
         {
             //download constructor
             InitializeComponent();
+            _userName = userName;
             this.ControlBox = false;
-            lblCaption.Text = $@"File {fileName} is Uploading and encrypting!{Environment.NewLine} Please wait";
+            lblCaption.Text = $@"File {Path.GetFileName(fileName)} is Uploading and encrypting!{Environment.NewLine} Please wait";
             this.Text = @"Downloading...";
             progressBar1.Maximum = 20;
             timer1.Interval = 250;
             progressBar1.Style = ProgressBarStyle.Marquee;
             timer1.Start();
-            DownloadFile(fileName, _client, _redisClient);
+            DownloadFile(fileName, _client);
 
         }
-        private async void DownloadFile(string fileName, Service1Client _client, RedisClient _redisClient)
+        private async void DownloadFile(string fileName, Service1Client _client)
         {
-            var fileinfo = _client.FileInfo(fileName, "WickeD");
+            var fileinfo = _client.FileInfo(fileName, _userName);
             var path = _directoryPath + @"\Download\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -82,11 +87,11 @@ namespace MyCloudClient
             var down = new byte[fileinfo.Length];
             for (int i = 0; i < nChunks; i++)
             {
-                var Downdata = _client.DownloadWithChunks(fileinfo.Name, "WickeD", i);
+                var Downdata = _client.DownloadWithChunks(fileinfo.Name, _userName, i);
                 Buffer.BlockCopy(Downdata, 0, down, i * CHUNK, Downdata.Length);
             }
 
-            //var down = _client.Download(fileName, "WickeD");
+            //var down = _client.Download(fileName, _userName);
             var dataWithoutAlgorithamByte = new byte[down.Length - 1];
             _algByte = new Byte[] {down[down.Length - 1]};
             if (Encoding.ASCII.GetString(_algByte) == "X")
@@ -105,7 +110,7 @@ namespace MyCloudClient
             var data = _crypto.Decrypt(dataWithoutAlgorithamByte);
             var hash = await Task.Run(() => GetHash(dataWithoutAlgorithamByte));
             //var hash = GetHash(data);
-            var redisGet = _redisClient.Get<string>(fileName);
+            var redisGet = _client.GetFileHash(_userName,fileName);
             if (hash == redisGet)
                 File.WriteAllBytes($"{path}{fileName}", data);
             else
@@ -117,11 +122,11 @@ namespace MyCloudClient
             DialogResult = DialogResult.OK;
             this.Close();
         }
-        private async void UploadFile(string FileName, Service1Client _client,string SafeFileName,RedisClient _redisClient)
+        private async void UploadFile(string FileName, Service1Client _client,string SafeFileName)
         {
             try
             {
-                var cloudSize = _client.StorageLeft("WickeD");
+                var cloudSize = _client.StorageLeft(_userName);
                 var fileinfo = new FileInfo(FileName);
 
                 var file = File.ReadAllBytes(fileinfo.FullName);
@@ -137,12 +142,12 @@ namespace MyCloudClient
                     var razlika = encWithAlgorithm.Length - i;
                     var chunk = new byte[razlika < CHUNK ? razlika : CHUNK];
                     Buffer.BlockCopy(encWithAlgorithm,i,chunk,0, razlika < CHUNK ? (int)razlika : CHUNK);
-                    _client.UploadWithChunks(fileinfo.Name, chunk, "WickeD", j, encWithAlgorithm.LongLength, i + CHUNK >= encWithAlgorithm.Length);
+                    _client.UploadWithChunks(fileinfo.Name, chunk, _userName, j, encWithAlgorithm.LongLength, i + CHUNK >= encWithAlgorithm.Length);
                 }
-                //_client.Upload(SafeFileName, encWithAlgorithm, "WickeD");
+                //_client.Upload(SafeFileName, encWithAlgorithm, _userName);
                 var hash = await Task.Run(() => GetHash(enc));
                 //var hash = GetHash(file);
-                _redisClient.Set(SafeFileName, hash);
+                _client.SetFileHash(_userName,fileinfo.Name,hash);
                 timer1.Stop();
                 DialogResult = DialogResult.OK;
                 this.Close();

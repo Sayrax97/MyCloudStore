@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -7,6 +8,7 @@ using System.ServiceModel.Web;
 using System.Text;
 using System.IO;
 using System.Security.AccessControl;
+using ServiceStack.Redis;
 
 namespace MyCloudService
 {
@@ -14,15 +16,18 @@ namespace MyCloudService
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class Service1 : IService1
     {
-        private string _directoryPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath+"Temp";
+        private string _tempPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath+"Temp";
+        private string _directoryPath = System.Web.Hosting.HostingEnvironment.ApplicationPhysicalPath;
         private static Dictionary<string, byte[]> _chunks=new Dictionary<string, byte[]>();
+        private const string REDIS_HOST = "localhost:6379";
         private const int CHUNK_SIZE= 1048576;
+        private static RedisClient _redisClient=new RedisClient(REDIS_HOST);
 
         public string Upload(string fileName, byte[] data, string userName)
         {
             try
             {
-                var path = $@"{_directoryPath}\{userName}";
+                var path = $@"{_tempPath}\{userName}";
                 Directory.CreateDirectory(path);
                 File.WriteAllBytes($@"{path}\{fileName}", data);
                 return "Uploaded";
@@ -38,7 +43,7 @@ namespace MyCloudService
         {
             try
             {
-                var path = $@"{_directoryPath}\{userName}";
+                var path = $@"{_tempPath}\{userName}";
                 if(chunkId==0)
                 {
                     if(!_chunks.ContainsKey(userName))
@@ -75,7 +80,7 @@ namespace MyCloudService
         {
             try
             {
-                return File.ReadAllBytes($@"{_directoryPath}\{userName}\{fileName}");
+                return File.ReadAllBytes($@"{_tempPath}\{userName}\{fileName}");
             }
             catch (IOException e)
             {
@@ -90,7 +95,7 @@ namespace MyCloudService
             {
                 FileInfo fi = FileInfo(fileName, userName);
                 var data = new byte[fi.Length - chunkId * CHUNK_SIZE < CHUNK_SIZE ? fi.Length - chunkId * CHUNK_SIZE : CHUNK_SIZE];
-                var path = $@"{_directoryPath}\{userName}\{fileName}";
+                var path = $@"{_tempPath}\{userName}\{fileName}";
                 if (chunkId == 0)
                 {
                     if (!_chunks.ContainsKey(userName))
@@ -119,7 +124,7 @@ namespace MyCloudService
 
         public string[] AllFiles(string userName)
         {
-            var path = $@"{_directoryPath}\{userName}";
+            var path = $@"{_tempPath}\{userName}";
             Directory.CreateDirectory(path);
             string[] files=Directory.GetFiles(path);
             for (int i = 0; i < files.Length; i++)
@@ -132,38 +137,38 @@ namespace MyCloudService
 
         public bool FileExists(string fileName, string userName)
         {
-            var path = $@"{_directoryPath}\{userName}";
+            var path = $@"{_tempPath}\{userName}";
             return File.Exists($@"{path}\{fileName}");
         }
         public bool FolderExists(string folderName, string userName)
         {
-            var path = $@"{_directoryPath}\{userName}";
+            var path = $@"{_tempPath}\{userName}";
             return Directory.Exists($@"{path}\{folderName}");
         }
 
         public FileInfo FileInfo(string fileName, string userName)
         {
-            var path = $@"{_directoryPath}\{userName}\{fileName}";
+            var path = $@"{_tempPath}\{userName}\{fileName}";
             return new FileInfo(path);
         }
 
         public void RenameFile(string fileName, string userName, string newName)
         {
-            var path1 = $@"{_directoryPath}\{userName}\{fileName}";
-            var path2 = $@"{_directoryPath}\{userName}\{newName}";
+            var path1 = $@"{_tempPath}\{userName}\{fileName}";
+            var path2 = $@"{_tempPath}\{userName}\{newName}";
             File.Move(path1, path2);
         }
 
         public void DeleteFile(string fileName, string userName)
         {
-            var path1 = $@"{_directoryPath}\{userName}\{fileName}";
+            var path1 = $@"{_tempPath}\{userName}\{fileName}";
             File.Delete(path1);
         }
 
         public double StorageLeft(string userName)
         {
             var  maxStorage = 2147483648;
-            var path = $@"{_directoryPath}\{userName}";
+            var path = $@"{_tempPath}\{userName}";
             double size = 0;
             var files=Directory.GetFiles(path, "*.*");
             foreach (var file in files)
@@ -175,12 +180,35 @@ namespace MyCloudService
             double left = maxStorage - size;
             return left;
         }
-        private byte[] Append(byte[] current, byte[] after)
+
+        public bool Login(string userName, string password)
         {
-            var bytes = new byte[current.Length + after.Length];
-            current.CopyTo(bytes, 0);
-            after.CopyTo(bytes, current.Length);
-            return bytes;
+
+            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe", _directoryPath + @"\Redis_db\redis.windows.conf");
+            Process.Start(_directoryPath + @"\Redis_db\redis-cli.exe");
+            if (_redisClient.Hashes[userName]["password"] == password)
+                return true;
+            else
+            {
+                return false;
+            }
+        }
+
+        public void CreateAccount(string userName, string password)
+        {
+            Process.Start(_tempPath + @"\Redis_db\redis-server.exe");
+            Process.Start(_tempPath + @"\Redis_db\redis-cli.exe");
+            _redisClient.Hashes[userName]["password"] = password;
+        }
+
+        public string GetFileHash(string userName, string fileName)
+        {
+            return _redisClient.Hashes[userName][fileName];
+        }
+
+        public void SetFileHash(string userName, string fileName, string hash)
+        {
+            _redisClient.Hashes[userName][fileName] = hash;
         }
     }
 }

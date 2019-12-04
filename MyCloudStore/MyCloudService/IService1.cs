@@ -40,6 +40,17 @@ namespace MyCloudService
         [OperationContract]
         double StorageLeft(string userName);
 
+        [OperationContract]
+        bool Login(string userName,string password);
+
+        [OperationContract]
+        void CreateAccount(string userName, string password);
+
+        [OperationContract]
+        string GetFileHash(string userName,string fileName);
+
+        [OperationContract]
+        void SetFileHash(string userName, string fileName,string hash);
     }
 
 

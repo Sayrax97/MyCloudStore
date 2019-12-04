@@ -80,6 +80,30 @@ namespace MyCloudClient.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/StorageLeft", ReplyAction="http://tempuri.org/IService1/StorageLeftResponse")]
         System.Threading.Tasks.Task<double> StorageLeftAsync(string userName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/Login", ReplyAction="http://tempuri.org/IService1/LoginResponse")]
+        bool Login(string userName, string password);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/Login", ReplyAction="http://tempuri.org/IService1/LoginResponse")]
+        System.Threading.Tasks.Task<bool> LoginAsync(string userName, string password);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/CreateAccount", ReplyAction="http://tempuri.org/IService1/CreateAccountResponse")]
+        void CreateAccount(string userName, string password);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/CreateAccount", ReplyAction="http://tempuri.org/IService1/CreateAccountResponse")]
+        System.Threading.Tasks.Task CreateAccountAsync(string userName, string password);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetFileHash", ReplyAction="http://tempuri.org/IService1/GetFileHashResponse")]
+        string GetFileHash(string userName, string fileName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/GetFileHash", ReplyAction="http://tempuri.org/IService1/GetFileHashResponse")]
+        System.Threading.Tasks.Task<string> GetFileHashAsync(string userName, string fileName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetFileHash", ReplyAction="http://tempuri.org/IService1/SetFileHashResponse")]
+        void SetFileHash(string userName, string fileName, string hash);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/SetFileHash", ReplyAction="http://tempuri.org/IService1/SetFileHashResponse")]
+        System.Threading.Tasks.Task SetFileHashAsync(string userName, string fileName, string hash);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -195,6 +219,38 @@ namespace MyCloudClient.ServiceReference1 {
         
         public System.Threading.Tasks.Task<double> StorageLeftAsync(string userName) {
             return base.Channel.StorageLeftAsync(userName);
+        }
+        
+        public bool Login(string userName, string password) {
+            return base.Channel.Login(userName, password);
+        }
+        
+        public System.Threading.Tasks.Task<bool> LoginAsync(string userName, string password) {
+            return base.Channel.LoginAsync(userName, password);
+        }
+        
+        public void CreateAccount(string userName, string password) {
+            base.Channel.CreateAccount(userName, password);
+        }
+        
+        public System.Threading.Tasks.Task CreateAccountAsync(string userName, string password) {
+            return base.Channel.CreateAccountAsync(userName, password);
+        }
+        
+        public string GetFileHash(string userName, string fileName) {
+            return base.Channel.GetFileHash(userName, fileName);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetFileHashAsync(string userName, string fileName) {
+            return base.Channel.GetFileHashAsync(userName, fileName);
+        }
+        
+        public void SetFileHash(string userName, string fileName, string hash) {
+            base.Channel.SetFileHash(userName, fileName, hash);
+        }
+        
+        public System.Threading.Tasks.Task SetFileHashAsync(string userName, string fileName, string hash) {
+            return base.Channel.SetFileHashAsync(userName, fileName, hash);
         }
     }
 }

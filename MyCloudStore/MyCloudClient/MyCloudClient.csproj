@@ -100,11 +100,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="CreateAccountForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="CreateAccountForm.Designer.cs">
+      <DependentUpon>CreateAccountForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MyCloudStoreClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MyCloudStoreClientForm.Designer.cs">
+      <DependentUpon>MyCloudStoreClientForm.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadForm.cs">
       <SubType>Form</SubType>
@@ -126,8 +132,11 @@
     <Compile Include="RenameFileForm.Designer.cs">
       <DependentUpon>RenameFileForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="CreateAccountForm.resx">
+      <DependentUpon>CreateAccountForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MyCloudStoreClientForm.resx">
+      <DependentUpon>MyCloudStoreClientForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadForm.resx">
       <DependentUpon>LoadForm.cs</DependentUpon>

@@ -16,13 +16,11 @@ using ServiceStack.Redis;
 
 namespace MyCloudClient
 {
-    public partial class Form1 : Form
+    public partial class MyCloudStoreClientForm : Form
     {
         private List<string> _listFiles=new List<string>();
-        private string _host = "localhost:6379";
         private Service1Client _client;
         private string _userName;
-        private RedisClient _redisClient;
         private static Dictionary<string, int> _extensions = new Dictionary<string, int>
         {
             {".png",0},
@@ -42,11 +40,11 @@ namespace MyCloudClient
 
         private static string _workingDirectory = Environment.CurrentDirectory;
         private string _directoryPath = Directory.GetParent(_workingDirectory).Parent.FullName;
-        public Form1()
+        public MyCloudStoreClientForm()
         {
             InitializeComponent();
         }
-        public Form1(string userName)
+        public MyCloudStoreClientForm(string userName)
         {
             InitializeComponent();
             _userName = userName;
@@ -77,22 +75,19 @@ namespace MyCloudClient
             lblExt.Visible = false;
             lblSize.Visible = false;
             lblTime.Visible = false;
-            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe");
-            Process.Start(_directoryPath + @"\Redis_db\redis-cli.exe");
-            _redisClient=new RedisClient(_host);
         }
         private void GetAllFiles()
         {
             _listFiles.Clear();
             listView1.Clear();
-            _listFiles = _client.AllFiles("WickeD").ToList();
+            _listFiles = _client.AllFiles(_userName).ToList();
             foreach (var item in _listFiles)
             {
                 var ext = Path.GetExtension(item);
                 listView1.Items.Add(item, _extensions[ext]);
             }
 
-            var left = _client.StorageLeft("WickeD");
+            var left = _client.StorageLeft(_userName);
             left /= 1024;
             left /= 1024;
             lblStorageLeft.Text =  Math.Round(left,2)+ @"MB remaining";
@@ -131,7 +126,7 @@ namespace MyCloudClient
                 lblSize.Visible = true;
                 lblTime.Visible = true;
             }
-            var info = _client.FileInfo(listView1.SelectedItems[0].Text, "WickeD");
+            var info = _client.FileInfo(listView1.SelectedItems[0].Text, _userName);
             double length = info.Length;
             var unit = "B";
             if (length > 1024)
@@ -158,7 +153,7 @@ namespace MyCloudClient
         }
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client, _redisClient))
+            using (LoadForm lf = new LoadForm( listView1.SelectedItems[0].Text, _client,_userName))
             {
                 lf.ShowDialog();
             }
@@ -166,7 +161,7 @@ namespace MyCloudClient
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var info=_client.FileInfo(listView1.SelectedItems[0].Text, "WickeD");
+            var info=_client.FileInfo(listView1.SelectedItems[0].Text, _userName);
             var length = info.Length;
             var unit = "B";
             if (length > 1024)
@@ -194,14 +189,14 @@ namespace MyCloudClient
                 MessageBoxButtons.OKCancel);
             if(result==DialogResult.OK)
             {
-                _client.DeleteFile(listView1.SelectedItems[0].Text, "WickeD");
+                _client.DeleteFile(listView1.SelectedItems[0].Text, _userName);
                 GetAllFiles();
             }
         }
 
         private void renameStripMenuItem1_Click(object sender, EventArgs e)
         {
-            var dilog = new RenameFileForm(listView1.SelectedItems[0].Text,"WickeD");
+            var dilog = new RenameFileForm(listView1.SelectedItems[0].Text, _userName);
             var result = dilog.ShowDialog();
             if (result == DialogResult.OK)
             {
@@ -236,7 +231,7 @@ namespace MyCloudClient
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    using (LoadForm lf = new LoadForm(ofd.FileName, _client, ofd.SafeFileName, _redisClient, comboBox1.Text))
+                    using (LoadForm lf = new LoadForm(ofd.FileName, _client, ofd.SafeFileName, comboBox1.Text,_userName))
                     {
                         try
                         {
@@ -260,6 +255,27 @@ namespace MyCloudClient
         private string GetHash(byte[] file)
         {
             return SHA2.Hash(file);
+        }
+
+        private void comboBox1_TextUpdate(object sender, EventArgs e)
+        {
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            if (comboBox1.Text == "SimpleSubstitution")
+            {
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} fast {Environment.NewLine} weak {Environment.NewLine} file size is same";
+            }
+            else if (comboBox1.Text == "Knapsack")
+            {
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} fast {Environment.NewLine} strong {Environment.NewLine} file size is 3-5times bigger";
+            }
+            else if (comboBox1.Text == "XXTEA")
+            {
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} normal {Environment.NewLine} strong {Environment.NewLine} file size is same";
+            }
         }
     }
 }

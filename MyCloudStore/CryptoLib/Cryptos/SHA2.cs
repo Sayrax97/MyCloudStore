@@ -175,7 +175,7 @@ namespace CryptoLib.Cryptos
             bits.CopyTo(ret, 0);
             return ret;
         }
-        public static BitArray Prepend(BitArray current, BitArray before)
+        private static BitArray Prepend(BitArray current, BitArray before)
         {
             var bools = new bool[current.Count + before.Count];
             before.CopyTo(bools, 0);
@@ -183,7 +183,7 @@ namespace CryptoLib.Cryptos
             return new BitArray(bools);
         }
 
-        public static BitArray Append(BitArray current, BitArray after)
+        private static BitArray Append(BitArray current, BitArray after)
         {
             var bools = new bool[current.Count + after.Count];
             current.CopyTo(bools, 0);
