@@ -274,7 +274,7 @@ namespace MyCloudClient
             }
             else if (comboBox1.Text == "XXTEA")
             {
-                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} normal {Environment.NewLine} strong {Environment.NewLine} file size is same";
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} normal {Environment.NewLine} strong {Environment.NewLine} file size is same {Environment.NewLine} shouldn't be used with bigger files";
             }
         }
     }

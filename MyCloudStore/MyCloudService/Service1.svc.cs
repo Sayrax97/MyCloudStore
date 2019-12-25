@@ -156,6 +156,7 @@ namespace MyCloudService
         {
             var path1 = $@"{_tempPath}\{userName}\{fileName}";
             var path2 = $@"{_tempPath}\{userName}\{newName}";
+            _redisClient.Hashes[userName][newName] = _redisClient.Hashes[userName][fileName];
             File.Move(path1, path2);
         }
 
@@ -184,8 +185,7 @@ namespace MyCloudService
         public bool Login(string userName, string password)
         {
 
-            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe", _directoryPath + @"\Redis_db\redis.windows.conf");
-            Process.Start(_directoryPath + @"\Redis_db\redis-cli.exe");
+            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe");
             if (_redisClient.Hashes[userName]["password"] == password)
                 return true;
             else
@@ -196,8 +196,7 @@ namespace MyCloudService
 
         public void CreateAccount(string userName, string password)
         {
-            Process.Start(_tempPath + @"\Redis_db\redis-server.exe");
-            Process.Start(_tempPath + @"\Redis_db\redis-cli.exe");
+            Process.Start(_directoryPath + @"\Redis_db\redis-server.exe");
             _redisClient.Hashes[userName]["password"] = password;
         }
 

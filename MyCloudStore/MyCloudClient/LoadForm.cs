@@ -67,7 +67,7 @@ namespace MyCloudClient
             InitializeComponent();
             _userName = userName;
             this.ControlBox = false;
-            lblCaption.Text = $@"File {Path.GetFileName(fileName)} is Uploading and encrypting!{Environment.NewLine} Please wait";
+            lblCaption.Text = $@"File {Path.GetFileName(fileName)} is Downloading and encrypting!{Environment.NewLine} Please wait";
             this.Text = @"Downloading...";
             progressBar1.Maximum = 20;
             timer1.Interval = 250;
