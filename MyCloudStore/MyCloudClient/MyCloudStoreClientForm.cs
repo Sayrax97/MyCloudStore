@@ -270,11 +270,11 @@ namespace MyCloudClient
             }
             else if (comboBox1.Text == "Knapsack")
             {
-                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} fast {Environment.NewLine} strong {Environment.NewLine} file size is 3-5times bigger";
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} fast {Environment.NewLine} strong {Environment.NewLine} file size is 3-5times bigger {Environment.NewLine} shouldn't be used with bigger files";
             }
             else if (comboBox1.Text == "XXTEA")
             {
-                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} normal {Environment.NewLine} strong {Environment.NewLine} file size is same {Environment.NewLine} shouldn't be used with bigger files";
+                lblAlgDesc.Text = $@"This algorithm is: {Environment.NewLine} normal {Environment.NewLine} strong {Environment.NewLine} file size is same ";
             }
         }
     }
